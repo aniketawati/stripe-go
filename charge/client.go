@@ -70,6 +70,14 @@ func (c Client) New(params *stripe.ChargeParams) (*stripe.Charge, error) {
 	return charge, err
 }
 
+func MarkAsFraudulent(id string) (*stripe.Charge, error) {
+	return Update(id, &stripe.ChargeParams{FraudDetails: map[string]string{"user_report": "fraudulent"}})
+}
+
+func MarkAsSafe(id string) (*stripe.Charge, error) {
+	return Update(id, &stripe.ChargeParams{FraudDetails: map[string]string{"user_report": "safe"}})
+}
+
 // Get returns the details of a charge.
 // For more details see https://stripe.com/docs/api#retrieve_charge.
 func Get(id string, params *stripe.ChargeParams) (*stripe.Charge, error) {
@@ -104,6 +112,12 @@ func (c Client) Update(id string, params *stripe.ChargeParams) (*stripe.Charge, 
 
 		if len(params.Desc) > 0 {
 			body.Add("description", params.Desc)
+		}
+
+		if len(params.FraudDetails) > 0 {
+			for k, v := range params.FraudDetails {
+				body.Add(fmt.Sprintf("fraud_details[%s]", k), v)
+			}
 		}
 
 		params.AppendTo(body)

@@ -9,6 +9,7 @@ type RefundParams struct {
 	Charge string
 	Amount uint64
 	Fee    bool
+	Reason string
 }
 
 // RefundListParams is the set of parameters that can be used when listing refunds.
@@ -28,6 +29,7 @@ type Refund struct {
 	Tx       *Transaction      `json:"balance_transaction"`
 	Charge   string            `json:"charge"`
 	Meta     map[string]string `json:"metadata"`
+	Reason   string            `json:"reason"`
 }
 
 // RefundList is a list object for refunds.

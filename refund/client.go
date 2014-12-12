@@ -32,6 +32,10 @@ func (c Client) New(params *stripe.RefundParams) (*stripe.Refund, error) {
 		body.Add("refund_application_fee", strconv.FormatBool(params.Fee))
 	}
 
+	if len(params.Reason) > 0 {
+		body.Add("reason", params.Reason)
+	}
+
 	params.AppendTo(body)
 
 	refund := &stripe.Refund{}

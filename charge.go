@@ -17,6 +17,7 @@ type ChargeParams struct {
 	Desc, Statement, Email string
 	NoCapture              bool
 	Fee                    uint64
+	FraudDetails           map[string]string
 }
 
 // ChargeListParams is the set of parameters that can be used when listing charges.
@@ -59,6 +60,7 @@ type Charge struct {
 	Meta           map[string]string `json:"metadata"`
 	Email          string            `json:"receipt_email"`
 	Statement      string            `json:"statement_description"`
+	FraudDetails   map[string]string `json:"fraud_details"`
 }
 
 // UnmarshalJSON handles deserialization of a Charge.

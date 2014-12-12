@@ -5,6 +5,7 @@ import (
 
 	stripe "github.com/stripe/stripe-go"
 	"github.com/stripe/stripe-go/currency"
+	"github.com/stripe/stripe-go/refund"
 	. "github.com/stripe/stripe-go/utils"
 )
 
@@ -184,5 +185,48 @@ func TestChargeList(t *testing.T) {
 	}
 	if err := i.Err(); err != nil {
 		t.Error(err)
+	}
+}
+
+func TestMarkAsFraudulent(t *testing.T) {
+	chargeParams := &stripe.ChargeParams{
+		Amount:   1000,
+		Currency: currency.USD,
+		Card: &stripe.CardParams{
+			Name:   "Stripe Tester",
+			Number: "378282246310005",
+			Month:  "06",
+			Year:   "20",
+		},
+		Statement: "statement",
+		Email:     "a@b.com",
+	}
+
+	target, _ := New(chargeParams)
+	refund.New(&stripe.RefundParams{Charge: target.ID})
+	ch, _ := MarkAsFraudulent(target.ID)
+	if ch.FraudDetails["user_report"] != "fraudulent" {
+		t.Error("user_report was not fraudulent for a charge marked as fraudulent")
+	}
+}
+
+func TestMarkAsSafe(t *testing.T) {
+	chargeParams := &stripe.ChargeParams{
+		Amount:   1000,
+		Currency: currency.USD,
+		Card: &stripe.CardParams{
+			Name:   "Stripe Tester",
+			Number: "378282246310005",
+			Month:  "06",
+			Year:   "20",
+		},
+		Statement: "statement",
+		Email:     "a@b.com",
+	}
+
+	target, _ := New(chargeParams)
+	ch, _ := MarkAsSafe(target.ID)
+	if ch.FraudDetails["user_report"] != "safe" {
+		t.Error("user_report was not safe for a charge marked as safe")
 	}
 }
